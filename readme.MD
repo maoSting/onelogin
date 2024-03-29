@@ -7,6 +7,13 @@
 
 https://console-docs.apipost.cn/preview/8d459cb00ae12313/95034a107f3dacc5
 
+## 环境要求
+
+1、PHP >= 7.4
+
+2、"karsonzhang/fastadmin-addons": "~1.3.2",
+
+
 
 ## 使用说明
 1、请求第一步获取微信state（唯一随机字符串）
