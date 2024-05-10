@@ -1,7 +1,5 @@
 # fastadmin 一键登录插件
 
-> 现仅支持微信快捷登录，使用APP登录方式
-
 ## 文档地址
 
 https://console-docs.apipost.cn/preview/8d459cb00ae12313/95034a107f3dacc5
