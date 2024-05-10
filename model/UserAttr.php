@@ -2,6 +2,7 @@
 
 namespace addons\onelogin\model;
 
+use app\common\model\User;
 use think\Model;
 
 /**
@@ -18,10 +19,21 @@ class UserAttr extends Model
     protected $updateTime = 'update_time';
     protected $deleteTime = 'delete_time';
     
+    // 微信
     const GROUP_WECHAT = 'wechat';
     const NAME_WECHAT_OPENID = 'openid';
     const NAME_WECHAT_UNIONID = 'unionid';
     
+    
+    // 苹果登录
+    const GROUP_APPLE = 'apple';
+    const GROUP_APPLE_OPENID = 'openid';
+    
+    
+    // 设备id
+    const GROUP_PLATFORM = 'platform';
+    const NAME_PLATFORM_ANDROID = 'android';
+    const NAME_PLATFORM_IOS = 'ios';
     
     // 追加属性
     protected $append = [
@@ -30,21 +42,21 @@ class UserAttr extends Model
     
     public function user()
     {
-        return $this->belongsTo('\app\common\model\User', 'user_id', 'id', [], 'LEFT');
+        return $this->belongsTo(User::class, 'user_id', 'id', [], 'LEFT');
     }
     
     /**
-     * 获取登录信息
-     *
-     * @param $openid
+     * @param $value
+     * @param $group
+     * @param $name
      * @return array|bool|\PDOStatement|string|Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getWechat($openid)
+    public function getValueByGroup($value, $group = self::GROUP_WECHAT, $name = self::NAME_WECHAT_OPENID)
     {
-        return $this->where('group', self::GROUP_WECHAT)->where('name', self::NAME_WECHAT_OPENID)->where('value', $openid)->find();
+        return $this->where('group', $group)->where('name', $name)->where('value', $value)->find();
     }
     
     /**
@@ -52,14 +64,16 @@ class UserAttr extends Model
      *
      * @param $openid
      * @param $extend
+     * @param $groupName
+     * @param $name
      * @return array|bool|\PDOStatement|string|Model|null
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function getTmpWechat($openid, $extend)
+    public function getTmpByGroup($openid, $extend, $groupName = self::GROUP_WECHAT, $name = self::NAME_WECHAT_OPENID)
     {
-        return $this->where('group', self::GROUP_WECHAT)->where('name', self::NAME_WECHAT_OPENID)->where('value', $openid)->where('extend', $extend)->find();
+        return $this->where('group', $groupName)->where('name', $name)->where('value', $openid)->where('extend', $extend)->find();
     }
     
     
@@ -94,14 +108,48 @@ class UserAttr extends Model
         return $this->saveAll($data);
     }
     
-    public function getUserWechatOpenid($userId)
+    public function createApple($useId, $openid, $extend = null)
     {
-        return $this->where('group', self::GROUP_WECHAT)->where('name', self::NAME_WECHAT_OPENID)->where('user_id', $userId)->find();
+        $data = [
+            'user_id' => $useId,
+            'group' => self::GROUP_APPLE,
+            'name' => self::GROUP_APPLE_OPENID,
+            'value' => $openid,
+            'extend' => $extend
+        ];
+        return $this->save($data);
     }
     
-    public function updateAttr($userId, $group, $name, $value, $extend)
+    public function getValueByUser($userId, $groupName = self::GROUP_WECHAT, $name = self::NAME_WECHAT_OPENID)
     {
+        return $this->where('group', $groupName)->where('name', $name)->where('user_id', $userId)->find();
+    }
     
+    public function getUserGroup($userId, $group)
+    {
+        return $this->where('group', $group)->where('user_id', $userId)->find();
+    }
+    
+    public function createUserGroup($userId, $group, $name, $value, $extend = "")
+    {
+        return self::create([
+            'group' => $group,
+            'name' => $name,
+            'value' => $value,
+            'extend' => $extend,
+            'user_id' => $userId
+        ]);
+    }
+    
+    
+    public function updateUserGroup($userId, $group, $name, $value, $extend = "")
+    {
+        return $this->save([
+            'group' => $group,
+            'name' => $name,
+            'value' => $value,
+            'extend' => $extend,
+        ], ['user_id' => $userId]);
     }
     
 }
