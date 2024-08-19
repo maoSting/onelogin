@@ -41,4 +41,4 @@ https://console-docs.apipost.cn/preview/8d459cb00ae12313/95034a107f3dacc5
 
 ### 2.0.1
 
-支持 sign in with apple
+支持苹果登录 sign in with apple
